@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <title>Blejz</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+        <link rel="manifest" href="manifest.json"></link>
+
+        <script>
+        if (navigator.serviceWorker.controller) {
+          console.log('[PWA Builder] active service worker found, no need to register')
+        } else {
+
+        //Register the ServiceWorker
+          navigator.serviceWorker.register('pwabuilder-sw.js', {
+            scope: './'
+          }).then(function(reg) {
+            console.log('Service worker has been registered for scope:'+ reg.scope);
+          });
+        }
+        </script>
+
+        <script>
+        self.addEventListener('install', function(event) {
+          event.waitUntil(preLoad());
+        });
+
+        var preLoad = function(){
+          console.log('[PWA Builder] Install Event processing');
+          return caches.open('pwabuilder-offline').then(function(cache) {
+            console.log('[PWA Builder] Cached index and offline page during Install');
+            return cache.addAll(['/offline.html', '/index.html', '/article.html']);
+          });
+        }
+
+        self.addEventListener('fetch', function(event) {
+          console.log('The service worker is serving the asset.');
+          event.respondWith(checkResponse(event.request).catch(function() {
+            return returnFromCache(event.request)}
+          ));
+          event.waitUntil(addToCache(event.request));
+        });
+
+        var checkResponse = function(request){
+          return new Promise(function(fulfill, reject) {
+            fetch(request).then(function(response){
+              if(response.status !== 404) {
+                fulfill(response)
+              } else {
+                reject()
+              }
+            }, reject)
+          });
+        };
+
+        var addToCache = function(request){
+          return caches.open('pwabuilder-offline').then(function (cache) {
+            return fetch(request).then(function (response) {
+              console.log('[PWA Builder] add page to offline'+response.url)
+              return cache.put(request, response);
+            });
+          });
+        };
+
+        var returnFromCache = function(request){
+          return caches.open('pwabuilder-offline').then(function (cache) {
+            return cache.match(request).then(function (matching) {
+             if(!matching || matching.status == 404) {
+               return cache.match('offline.html')
+             } else {
+               return matching
+             }
+            });
+          });
+        };
+    </script>
+
+        <script src="manup.js"></script>
+
+
+        <style>
+
+            body {
+                font-size: 106.75%;
+                max-width: 72em;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            h1+p {
+                margin-top: 0;
+            }
+
+            article p,
+            article ul,
+            article ol {
+                max-width: 34em;
+            }
+
+        </style>
+
+    </head>
+
+    <body class="center bg-white ma0 ph2 ph3-l pv0 sans-serif dark-gray lh-copy">
+
+        <header class="pv1 bb bw2 b--light-gray dark-red mb3 mb4-l cf">
+
+            <div class="fl w-25 pr3">
+
+                <h1 class="f6 ma0 pa0"><a href="#" class="link dark-red">bV</a></h1>
+
+            </div>
+
+            <nav class="fr w-75 tr">
+
+                <ul class="f6 ma0 pa0 list">
+
+                    <li class="dib mr2 ml3-l mr0-l"><a class="link dark-red" href="/index.html">Home</a></li>
+                    <li class="dib mr2 ml3-l mr0-l"><a class="link dark-red" href="/article.html">Article</a></li>
+
+                </ul>
+
+            </nav>
+
+        </header>
+
+        <main class="cf pb2">
+
+            <div class="fl-l w-75-l pr4-l">
+
+                <article class="mb3 mb4-l pt2">
+
+                    <h1 class="f3 ma0 mb2 pa0 lh-title"><a href="#" class="dark-red">A textual discussion</a></h1>
+
+                    <p>Bacon ipsum dolor amet doner corned beef tri-tip andouille pancetta sirloin turkey leberkas. Ham hock ham ball tip pig fatback porchetta, doner meatloaf alcatra spare ribs short ribs. Fatback pastrami drumstick, corned beef shank sirloin alcatra ham chicken cow swine boudin tongue kevin. Cow meatloaf tri-tip filet mignon.</p>
+
+                </article>
+
+                <article class="mb3 mb4-l pt2">
+
+                    <h1 class="f3 ma0 mb2 pa0 lh-title"><a href="#" class="dark-red">Idoli</a></h1>
+
+                    <img src="http://68.media.tumblr.com/1921ad9952d0433b2bf362e1e8d16095/tumblr_neav2uGoGI1tvy2pwo1_1280.jpg" alt="Idoli">
+
+                    <img src="http://68.media.tumblr.com/f5ba552a9faed4956607d75c3ef5a218/tumblr_neav2uGoGI1tvy2pwo2_1280.jpg" alt="Idoli">
+
+                </article>
+
+                <article class="mb3 mb4-l pt2">
+
+                    <h1 class="f3 ma0 mb2 pa0 lh-title"><a href="#" class="dark-red">Idoli</a></h1>
+
+                    <img src="http://68.media.tumblr.com/1921ad9952d0433b2bf362e1e8d16095/tumblr_neav2uGoGI1tvy2pwo1_1280.jpg" alt="Idoli">
+
+                    <img src="http://68.media.tumblr.com/f5ba552a9faed4956607d75c3ef5a218/tumblr_neav2uGoGI1tvy2pwo2_1280.jpg" alt="Idoli">
+
+                </article>
+
+                <article class="mb3 mb4-l pt2">
+
+                    <h1 class="f3 ma0 mb2 pa0 lh-title"><a href="#" class="dark-red">A textual discussion</a></h1>
+
+                    <p>Bacon ipsum dolor amet doner corned beef tri-tip andouille pancetta sirloin turkey leberkas. Ham hock ham ball tip pig fatback porchetta, doner meatloaf alcatra spare ribs short ribs. Fatback pastrami drumstick, corned beef shank sirloin alcatra ham chicken cow swine boudin tongue kevin. Cow meatloaf tri-tip filet mignon.</p>
+
+                </article>
+
+            </div>
+
+            <sidebar class="fl-l w-25-l mb3 pt2">
+
+                <p class="f6 ma0">Bacon ipsum dolor amet doner corned beef tri-tip andouille pancetta sirloin turkey leberkas. Ham hock ham ball tip pig fatback porchetta, doner meatloaf alcatra spare ribs short ribs. Fatback pastrami drumstick, corned beef shank sirloin alcatra ham chicken cow swine boudin tongue kevin. Cow meatloaf tri-tip filet mignon.</p>
+
+            </sidebar>
+
+        </main>
+
+        <footer class="bt b--light-gray pv2">
+
+            <p class="f6 ma0">Functional user interfaces for comfortable reading and viewing.</p>
+
+        </footer>
+
+    </body>
+
+</html>
